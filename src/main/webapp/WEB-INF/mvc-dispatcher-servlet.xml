@@ -1,0 +1,54 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+
+	<context:component-scan base-package="com.football">
+		<context:exclude-filter type="regex"
+			expression="com.football.college.controller.*Controller" />
+	</context:component-scan>
+	<mvc:annotation-driven />
+	<context:component-scan base-package="/"/>
+	<util:properties id="myproperties" location="classpath:/cfb.properties"/>
+	<bean class="com.football.college.controller.UserController"/>
+	<bean class="com.football.college.controller.AdminController"/>
+	<bean class="com.football.college.controller.PlayerController"/>	
+	<bean class="com.football.college.controller.ApiKeyController"/>	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/pages/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+	<bean id="userDao" class="com.football.college.service.dao.UserDAO"/>
+    <bean id="weekDao" class="com.football.college.service.dao.WeekDAO"/>
+	<bean class="com.football.college.service.impl.FootballUserServiceImpl" id="footballUserService"/>
+	<bean class="com.football.college.service.impl.WeekServiceImpl" id="weekService"/>
+	<bean id="apiKeyAuthenticationProvider" class="com.football.college.web.security.ApiKeyAuthenticationProvider"/>
+	<bean id="apiKeyAuthenticationFilter" class="com.football.college.web.filter.ApiKeyAuthenticationFilter">
+        <constructor-arg name="defaultFilterProcessesUrl" value="/"/>
+        <property name="authenticationManager" ref="defaultAuthenticationManager"/>
+        <property name="authenticationSuccessHandler">
+            <!-- Upon successful authentication, Spring will attempt to try and move you to another URL -->
+            <!-- We have to prevent this because the request for the resource and the authentication all get done in the same request! -->
+            <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
+                <property name="redirectStrategy">
+                    <bean class="com.football.college.web.filter.NoRedirectStrategy"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    <bean id="forbiddenEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+</beans>

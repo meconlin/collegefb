@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/apikey/warmer</url>
+    <description>Hit some of our data sources every 60 minutes, try to keep the system warmed up</description>
+    <schedule>every 60 minutes</schedule>
+  </cron>
+</cronentries>
